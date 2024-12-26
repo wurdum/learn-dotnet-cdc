@@ -1,0 +1,36 @@
+###
+POST http://localhost:8083/connectors
+Content-Type: application/json
+
+{
+  "name": "transaction-changes-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "plugin.name": "pgoutput",
+    "tasks.max": "1",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "postgres",
+    "database.server.name": "postgres",
+    "table.include.list": "public.transactions,",
+    "database.history.kafka.bootstrap.servers": "broker:9092",
+    "database.history.kafka.topic": "schema-changes.transactions,",
+    "topic.prefix": "postgres",
+    "topic.creation.enable": "true",
+    "topic.creation.default.replication.factor": "1",
+    "topic.creation.default.partitions": "1",
+    "topic.creation.default.cleanup.policy": "delete",
+    "topic.creation.default.retention.ms": "604800000"
+  }
+}
+
+###
+GET http://localhost:8083/connectors
+
+###
+GET http://localhost:8083/connectors/transaction-changes-connector
+
+###
+GET http://localhost:8083/connectors/transaction-changes-connector/status

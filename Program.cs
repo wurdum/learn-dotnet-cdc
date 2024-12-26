@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 var builder = Host.CreateApplicationBuilder();
 
 builder.Services.AddDbContext<ApplicationContext>(options => options
-        .UseNpgsql("Host=localhost;Port=5432;Database=transactions;Username=postgres;Password=postgres")
+        .UseNpgsql("Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=postgres")
         .UseSnakeCaseNamingConvention());
 
 builder.Services.AddHostedService<TransactionProducer>();
