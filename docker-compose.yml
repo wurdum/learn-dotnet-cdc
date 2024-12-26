@@ -86,7 +86,7 @@ services:
       "
 
   debezium:
-    image: debezium/connect:2.4
+    image: debezium/connect:2.7.3.Final
     container_name: debezium
     depends_on:
       - broker
