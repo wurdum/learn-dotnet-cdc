@@ -120,3 +120,5 @@ modules.xml
 
 .vscode
 .idea
+.aider*
+.env

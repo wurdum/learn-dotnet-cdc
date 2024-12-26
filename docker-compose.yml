@@ -51,6 +51,24 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "broker:29092"
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://schema-registry:8081"
 
+  topic-creator:
+    image: confluentinc/cp-kafka:7.8.0
+    container_name: topic-creator
+    depends_on:
+      - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+      
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic transaction-changes --replication-factor 1 --partitions 1
+      
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
+
   postgres:
     image: postgres:15
     container_name: postgres
