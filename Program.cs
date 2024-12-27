@@ -40,8 +40,11 @@ public class TransactionProducer(IServiceProvider serviceProvider, ILogger<Trans
         var scope = serviceProvider.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
 
+        var counter = 0;
         while (!stoppingToken.IsCancellationRequested)
         {
+            await using var dbt = await context.Database.BeginTransactionAsync(stoppingToken);
+
             var from = Accounts[Random.Next(Accounts.Length)];
             var transaction = new Transaction(
                 From: from,
@@ -51,11 +54,18 @@ public class TransactionProducer(IServiceProvider serviceProvider, ILogger<Trans
                 Timestamp: DateTimeOffset.UtcNow);
 
             context.Transactions.Add(transaction);
+
+            await context.Database.ExecuteSqlAsync(
+                $"SELECT * FROM pg_logical_emit_message(true, 'context', '{{ \"user\" : \"John\", \"counter\" : \"{counter}\" }}')",
+                CancellationToken.None);
+
             await context.SaveChangesAsync(stoppingToken);
+            await dbt.CommitAsync(stoppingToken);
 
             logger.LogInformation("Transaction added: {Transaction}", transaction);
 
             await Task.Delay(1000, stoppingToken);
+            counter++;
         }
     }
 }
